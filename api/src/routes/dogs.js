@@ -4,10 +4,10 @@ const router = Router();
 // Ejemplo: const authRouter = require('./auth.js');
 
 
-const { getDogById, createDog, getDogs } = require('../services/dogs.js');
+const { getDogById, postDog, getDogs } = require('../services/dogs.js');
  
 router.get('/', getDogs); 
 router.get('/:id', getDogById);
-router.post('/', createDog);
+router.post('/', postDog);
 
 module.exports = router;

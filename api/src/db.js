@@ -9,6 +9,7 @@ const {
 const sequelize = new Sequelize(`postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/dogs`, {
   logging: false, // set to console.log to see the raw SQL queries
   native: false, // lets Sequelize know we can use pg-native for ~30% more speed
+  force: false
 });
 const basename = path.basename(__filename);
 
@@ -30,7 +31,7 @@ sequelize.models = Object.fromEntries(capsEntries);
 
 // En sequelize.models están todos los modelos importados como propiedades
 // Para relacionarlos hacemos un destructuring
-const { Dog, Temperament } = sequelize.models;
+const { Dog, Temperament, Favorite } = sequelize.models;
 
 // Aca vendrian las relaciones
 // Product.hasMany(Reviews);

@@ -4,78 +4,101 @@ const Op = Sequelize.Op;
 
 require("dotenv").config() // Objeto process con la propiedad env
 
-const { Dog } = require("../db.js")
-const {
-    API_URL,
-    URL_IMAGE,
-} = process.env;
+const { infoDogs, isFavTrue } = require("../utils/functions.js")
+const { Dog, Temperament, Favorite } = require("../db.js")
+const { API_URL } = process.env;
 
-const createDogCont = async (
+const createDog = async (
     name,
     weight,
     height,
     lifeSpan,
-    temperaments,
-    image) => {
-        const dog =await Dog.create({
+    temperamentsId,
+    image
+) => {
+    const dog = await Dog.create({
+        name,
+        weight,
+        height,
+        lifeSpan,
+        image
+    });
+
+    // Añadir la relación con los temperamentos
+    await dog.addTemperaments(temperamentsId);
+
+    const dogCreated = await Dog.findAll({
+        where: {
             name,
-            weight,
-            height,
-            lifeSpan,
-            temperaments,
-            image,
-        });
-        return dog;
+        },
+        include: {
+            model: Temperament,
+            attributes: ["name"],
+            through: {
+                attributes: [],
+            }
+        }
+    });     
+    return dogCreated;
 };
 
-const getDog = async (id, aux) => {
-    if (aux){
-        return await Dog.findByPk(id);
+const getDog = async (id) => {
+    if (isNaN(id)){
+        const dog = await Dog.findByPk(id, {
+            include: {
+                model: Temperament,
+                attributes: ["name"],
+                through: {
+                    attributes: [],
+                }
+            }
+        });
+        return dog;
     } else {
-        const dogAux = (await axios.get(`${API_URL}/${id}`)).data;
-        const dog = infoDogs(dogAux);
+        let dog = (await axios.get(`${API_URL}/${id}`)).data;
+        dog = infoDogs(dog);
         return dog;
     };
 };
 
 const getDogsByName = async (name) => {
     const dogsNameAux = (await axios.get(`${API_URL}/search?q=${name}`)).data;    
-    const dogsName = dogsNameAux.map(e => infoDogs(e))
+    const dogsName = await Promise.all(dogsNameAux.map(e => infoDogs(e)));
     const dogsByNameDB = await Dog.findAll({
         where: {
             name: {
                 [Op.like]: `%${name}%`
+            }
+        },
+        include:{
+            model: Temperament,
+            attributes: ["name"],
+            through: {
+                attributes: [],
             }
         }
     });
     return [...dogsName, ...dogsByNameDB];
 };
 
-const getAllDogs = async () => {    
-    const dogsAux = (await axios.get(`${API_URL}`)).data;    
-    const dogs = dogsAux.map(e => infoDogs(e))
-    const dogsDB = await Dog.findAll();
-    return [...dogs, ...dogsDB];
-}
+const getAllDogs = async () => {
+    let dogsAPI = (await axios.get(`${API_URL}`)).data;
+    dogsAPI = await Promise.all(dogsAPI.map(e => infoDogs(e)));
 
-function infoDogs (data){
-    if (data) {
-        const dog = {
-            id: data.id,
-            name:data.name,
-            weight: data.weight.imperial,
-            height: data.height.imperial,
-            temperaments: data.temperament,
-            lifeSpan: data.life_span,
-            image: `${URL_IMAGE}${data.reference_image_id}`,
-            isFav: false
-        };
-        return dog;
-    };
+    const dogsDB = await Dog.findAll({
+        include:{
+            model: Temperament,
+            attributes: ["name"],
+            through: {
+                attributes: [],
+            }
+        }
+    });
+    return [...dogsAPI, ...dogsDB];
 }
 
 module.exports = {
-    createDogCont,
+    createDog,
     getDog,
     getDogsByName,
     getAllDogs,
