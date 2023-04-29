@@ -15,7 +15,6 @@ async function infoDogs (data){
             isFav: false
         };
         dog = await isFavTrue(dog);
-        console.log(dog)
         return dog;
     };
 }

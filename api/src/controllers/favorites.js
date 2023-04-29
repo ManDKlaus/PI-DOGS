@@ -8,8 +8,9 @@ const { infoFavs, infoDogs } = require("../utils/functions.js")
 const { Favorite, Dog, Temperament } = require("../db.js")
 const { API_URL } = process.env;
 
-const searchFav = async () => {
-    const dogsDB = await Dog.findAll({
+const searchFav = async () => {    
+    const favs = [];
+    let dogsDB = await Dog.findAll({
         where: {
             isFav: true 
         },
@@ -20,24 +21,24 @@ const searchFav = async () => {
                 attributes: [],
             }
         }
-    })
-    const favs = await Promise.all(
-        dogsDB.map(async (e) => {            
-            return infoFavs(e);
+    });
+    dogsDB = await Promise.all(
+        dogsDB.map(async (e) => { 
+            favs.push(infoFavs(e));
         })
     );
-
     const favsDB = await Favorite.findAll();
 
     for (const fav of favsDB) {
-        const dogData = await axios.get(`${API_URL}/${fav.dogId}`);
-        const dog = infoDogs(dogData.data);
-        dog.isFav = true;
+        let dog = (await axios.get(`${API_URL}/${fav.dogId}`)).data;
+        dog = await infoDogs(dog);
         favs.push(dog);
-    }
-    console.log("favs",favs)
+    };
+    if (!favs) {
+        throw new Error("Favorites not found");
+    };
     return favs;
-}
+};
 
 const addFavorites = async (dogId) => {  
     if (Number.isInteger(dogId)) {
@@ -54,7 +55,7 @@ const addFavorites = async (dogId) => {
     return false;
 };
 
-const suprFavorite = async (dogId) => {
+const eraseFavorite = async (dogId) => {
     const dog = await Dog.findByPk(dogId);
   
     if (dog) {
@@ -73,5 +74,5 @@ const suprFavorite = async (dogId) => {
 module.exports = {
     searchFav,
     addFavorites,
-    suprFavorite
+    eraseFavorite
 };

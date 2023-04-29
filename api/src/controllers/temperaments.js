@@ -9,7 +9,7 @@ const {
     API_KEY,
 } = process.env;
 
-async function getTemperaments(){
+async function searchTemperaments(){
     const {data} = await axios.get(`${API_URL}`);
     const filteredTemperaments = new Set(
         data.flatMap((dog) => (dog.temperament ? dog.temperament.split(", ") : []))
@@ -21,5 +21,5 @@ async function getTemperaments(){
 };
 
 module.exports = {
-    getTemperaments,
+    searchTemperaments,
 };

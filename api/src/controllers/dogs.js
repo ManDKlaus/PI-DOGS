@@ -8,41 +8,47 @@ const { infoDogs, isFavTrue } = require("../utils/functions.js")
 const { Dog, Temperament, Favorite } = require("../db.js")
 const { API_URL } = process.env;
 
-const createDog = async (
-    name,
-    weight,
-    height,
-    lifeSpan,
-    temperamentsId,
-    image
-) => {
-    const dog = await Dog.create({
-        name,
-        weight,
-        height,
-        lifeSpan,
-        image
+const createOrEditDog = async (id, dog, temperamentsId) => {
+    let createdDog;
+  
+    if (!id) {
+      createdDog = await Dog.create(dog);
+    } else {
+      createdDog = await Dog.findByPk(id);
+      if (createdDog) {
+        await createdDog.update(dog);
+      } else {
+        throw new Error("Dog not found");
+      }
+    }
+  
+    await createdDog.setTemperaments(temperamentsId);
+  
+    const dogCreated = await Dog.findByPk(createdDog.id, {
+      include: {
+        model: Temperament,
+        attributes: ["name"],
+        through: {
+          attributes: [],
+        },
+      },
     });
 
-    // Añadir la relación con los temperamentos
-    await dog.addTemperaments(temperamentsId);
-
-    const dogCreated = await Dog.findAll({
-        where: {
-            name,
-        },
-        include: {
-            model: Temperament,
-            attributes: ["name"],
-            through: {
-                attributes: [],
-            }
-        }
-    });     
+    if (!dogCreated) {
+      throw new Error("Failed to create or edit dog");
+    }
+  
     return dogCreated;
 };
 
-const getDog = async (id) => {
+const eraseDog = async (id) => {
+    const deletedDog = await Dog.destroy({ where: { id } });
+    if (!deletedDog) {
+        throw new Error("Dog not found.");
+    }
+};
+
+const searchDogById = async (id) => {
     if (isNaN(id)){
         const dog = await Dog.findByPk(id, {
             include: {
@@ -61,7 +67,7 @@ const getDog = async (id) => {
     };
 };
 
-const getDogsByName = async (name) => {
+const searchDogsByName = async (name) => {
     const dogsNameAux = (await axios.get(`${API_URL}/search?q=${name}`)).data;    
     const dogsName = await Promise.all(dogsNameAux.map(e => infoDogs(e)));
     const dogsByNameDB = await Dog.findAll({
@@ -78,10 +84,14 @@ const getDogsByName = async (name) => {
             }
         }
     });
-    return [...dogsName, ...dogsByNameDB];
+    const dogs = [...dogsName, ...dogsByNameDB]
+    if (!dogs) {        
+        throw new Error("DogsByName not found");
+    }
+    return dogs;
 };
 
-const getAllDogs = async () => {
+const searchAllDogs = async () => {
     let dogsAPI = (await axios.get(`${API_URL}`)).data;
     dogsAPI = await Promise.all(dogsAPI.map(e => infoDogs(e)));
 
@@ -94,12 +104,17 @@ const getAllDogs = async () => {
             }
         }
     });
-    return [...dogsAPI, ...dogsDB];
+    const dogs = [...dogsAPI, ...dogsDB]
+    if (!dogs) {        
+        throw new Error("AllDogs not found");
+    }
+    return dogs;
 }
 
 module.exports = {
-    createDog,
-    getDog,
-    getDogsByName,
-    getAllDogs,
+    createOrEditDog,
+    eraseDog,
+    searchDogById,
+    searchDogsByName,
+    searchAllDogs,
 };

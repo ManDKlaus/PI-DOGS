@@ -3,6 +3,6 @@ const router = express.Router();
 
 const { getAllTemperaments } = require("../services/temperaments");
 
-router.get("/", getAllTemperaments); //                  Array              Objeto
+router.get("/", getAllTemperaments);
 
 module.exports = router;

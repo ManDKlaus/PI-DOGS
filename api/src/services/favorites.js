@@ -1,37 +1,24 @@
 const axios = require("axios");
 
-require("dotenv").config() // Objeto process con la propiedad env
-const { searchFav, addFavorites, suprFavorite } = require("../controllers/favorites")
-const {
-    STATUS_OK,
-    STATUS_ERROR,
-} = process.env;
+const { searchFav, addFavorites, eraseFavorite } = require("../controllers/favorites")
 
 async function postFavorites (req, res) {
     const {id} = req.body;
     try {
         const newFav = addFavorites(id);
-        if (newFav) {
-            res.status(STATUS_OK).json({ message: "Add to Favorites"});
-        } else {
-            res.status(STATUS_OK).json({ message: "Error add to Favorites"});
-        }
+        res.status(200).json({ message: "Add to Favorites"});
     } catch (error) {
-        res.status(STATUS_ERROR).json({ message: error });
+        res.status(500).json({ message: "Not added to Favorites: Id not found" });
     }
 };
 
 const deleteFavorite = async (req, res) => {
     const {id} = req.body;
     try {
-        const oldFav = await suprFavorite(id);
-        if (oldFav) {
-            res.status(STATUS_OK).json({ message: "Favorite has been deleted" });
-        } else {
-            res.status(STATUS_OK).json({ message: "Deletion of favorite has encountered an error"});
-        }
+        const oldFav = await eraseFavorite(id);
+        res.status(200).json({ message: "Favorite has been deleted" });
     } catch (error) {
-        res.status(STATUS_ERROR).json({ message: error });
+        res.status(500).json({ message: "Not deleted of favorite: Id not found"});
     }
 
 }
@@ -39,9 +26,9 @@ const deleteFavorite = async (req, res) => {
 async function getFavorites (req, res) {
     try {
         const favorites = await searchFav();
-        res.status(STATUS_OK).json({ favorites });
+        res.status(200).json({ favorites });
     } catch (error) {
-        res.status(STATUS_ERROR).json({ message: error });
+        res.status(500).json({ message: error.message });
     }
 };
 

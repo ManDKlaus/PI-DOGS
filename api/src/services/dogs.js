@@ -1,11 +1,6 @@
 const axios = require("axios");
 
-require("dotenv").config() // Objeto process con la propiedad env
-const { createDog, getDog, getDogsByName, getAllDogs } = require("../controllers/dogs")
-const {
-    STATUS_OK,
-    STATUS_ERROR,
-} = process.env;
+const { createOrEditDog, eraseDog, searchDogById, searchDogsByName, searchAllDogs } = require("../controllers/dogs")
 
 async function postDog (req, res) {
     const {
@@ -14,30 +9,42 @@ async function postDog (req, res) {
         height,
         lifeSpan,
         temperamentsId,
-        image
+        image,
+        id,
     } = req.body;
     try {
-        const dog = await createDog(
+        const dog = await createOrEditDog(id, {
             name,
             weight,
             height,
             lifeSpan,
-            temperamentsId,
             image,
-        );
-        res.status(STATUS_OK).json(dog);
+        }, temperamentsId);
+        res.status(200).json(dog);
     } catch (error) {
-        res.status(500).json({ message: error });
+        res.status(500).json({ message: error.message });
     };
 }
+
+async function deleteDog (req, res) {
+    const { id } = req.body;
+    try {
+        await eraseDog(id);
+        res.status(200).json({ message: "Dog successfully deleted"});
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: error.message });
+    };
+};  
+
 
 async function getDogById (req, res) {
     const {id} = req.params;
     try {
-        const dog = await getDog(id);
-        res.status(STATUS_OK).json(dog);
+        const dog = await searchDogById(id);
+        res.status(200).json(dog);
     } catch (error) {
-        res.status(500).json({ message: error });
+        res.status(500).json({ message: "Dog not found" });
     };
 }
 
@@ -45,14 +52,14 @@ async function getDogs (req, res) {
     const {name} = req.query;
     try {
         if(name){
-            const dogs = await getDogsByName(name);  
-            res.status(STATUS_OK).json(dogs);  
+            const dogs = await searchDogsByName(name);  
+            res.status(200).json(dogs);  
         } else {
-            const allDogs = await getAllDogs();
-            res.status(STATUS_OK).json(allDogs);
+            const allDogs = await searchAllDogs();
+            res.status(200).json(allDogs);
         };
     } catch (error) {
-        res.status(500).json({ message: error });
+        res.status(500).json({ message: error.message });
     };
 }
 
@@ -60,4 +67,5 @@ module.exports = {
     getDogById,
     postDog,
     getDogs,
+    deleteDog,
 };

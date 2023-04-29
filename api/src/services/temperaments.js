@@ -1,17 +1,13 @@
 const axios = require("axios");
 
-require("dotenv").config() // Objeto process con la propiedad env
-const { getTemperaments } = require("../controllers/temperaments")
-const {
-    STATUS_OK,
-} = process.env;
+const { searchTemperaments } = require("../controllers/temperaments")
 
 async function getAllTemperaments (req, res) {
     try {
-        const temps = await getTemperaments();
-        res.status(STATUS_OK).json(temps);
+        const temps = await searchTemperaments();
+        res.status(200).json(temps);
     } catch (error) {
-        res.status(500).json({ message: error });
+        res.status(500).json({ message: "Temperaments not found" });
     };
 }
 
