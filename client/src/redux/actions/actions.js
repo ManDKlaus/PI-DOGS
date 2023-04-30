@@ -1,69 +1,129 @@
-import { 
+import {
+    SEARCH_TEMPS,
     SEARCH_DOGS,
-    ADD_DOG,
+    SEARCH_DOG_BY_ID,
+    CREATE_DOG,
+    REMOVE_DOG,
     ACT_DOGS,
+    SEARCH_FAV,
     ADD_FAV,
     REMOVE_FAV,
-    GET_FAV,
+    FILTER_TEMPS,
     FILTER,
     ORDER,
     RESET,
     NEXT_PAGE,
     PREV_PAGE,
-} from "./actionstypes";
+} from "./actionstypes.js";
 
 import axios from "axios";
 
-export function addChar (dogs) {
-    return {
-        type: ADD_DOG,
-        payload: dogs,
+export function searchTemps () {
+    return async (dispatch) => {
+        try {
+            const temps = await axios.get('http://localhost:3001/temperaments');
+            dispatch({
+                type: SEARCH_TEMPS,
+                payload: temps
+            });
+        } catch (error) {
+            console.error(error);
+        }
     };
 };
 
-export function actChar (dogs) {
+export function searchDogs (name) {
+    return async function (dispatch) {
+        let dogs = [];
+        try {
+            if (name) {
+                dogs = await axios.get(`http://localhost:3001/dogs?name=${name}`)
+            } else {
+                dogs = await axios.get("http://localhost:3001/dogs")
+            }
+            dispatch({
+                type: SEARCH_DOGS,
+                payload: [dogs, name]
+            });
+        }catch (error){
+            console.error(error);
+        }
+    };
+};
+
+export function searchDogbyId ( dogId ) {
+    return async function (dispatch) {
+        try {
+            const dog = await axios.post(`http://localhost:3001/dogs/${dogId}`);
+            dispatch({
+                type: SEARCH_DOG_BY_ID,
+                payload: dog,
+            });
+        } catch (error){
+            console.error(error);
+        }
+    };
+};
+
+export function createDog ( data ) {
+    return async function (dispatch) {
+        try {
+            const newDog = await axios.post("http://localhost:3001/dogs", data);
+            dispatch({
+                type: CREATE_DOG,
+                payload: newDog,
+            });
+        } catch (error){
+            console.error(error);
+        }
+    };
+};
+
+export function removeDog ( dogId ) {
+    return async function (dispatch) {
+        try {
+            await axios.delete("http://localhost:3001/dogs", dogId);
+            dispatch({
+                type: REMOVE_DOG,
+                payload: dogId,
+            });
+        } catch (error){
+            console.error(error);
+        }
+    };
+};
+
+export function actDogs (dogs) {
     return {
         type: ACT_DOGS,
         payload: dogs,
     };
-}
+};
 
-export function searchCharacter(dog) {
-  return {
-    type: SEARCH_DOGS,
-    payload: dog,
-  };
-}
-
-export function getFav() {
-    return async function (dispatch) {
-      try {
-        const { data } = await axios.get(
-          `http://localhost:3001/rickandmorty/favorites/all`
-        );
-        return dispatch({
-          type: GET_FAV,
-          payload: data,
-        });
-      } catch (error) {
-        console.log("getFav not found", error);
-      }
-    };
-  }
-
-export function addFav (props) {
+export function searchFav () {
     return async function (dispatch) {
         try {
-            const {data} = await axios.post(
-                `http://localhost:3001/rickandmorty/favorites`,
-                props
-            );
-            return dispatch({
-                type: ADD_FAV,
-                payload: data,
+            const favorites = await axios.get("http://localhost:3001/favorites")
+            dispatch({
+                type: SEARCH_FAV,
+                payload: favorites,
             });
         } catch (error) {
-            console.log("addFav not found", error);
+            console.error(error);
+        }
+    };
+};
+
+export function addFav (id) {
+    return async function (dispatch) {
+        try {
+            const dogId = await axios.post("http://localhost:3001/favorites", id);
+            dispatch({
+                type: ADD_FAV,
+                payload: dogId,
+            });
+        } catch (error) {
+            console.error(error);
         };
     };
 };
@@ -71,23 +131,28 @@ export function addFav (props) {
 export function removeFav (id) {
     return async function (dispatch) {
         try {
-            const {data} = await axios.delete(
-                `http://localhost:3001/rickandmorty/favorites/${id}`
-            );
-            return dispatch({
+            const dogId = await axios.delete("http://localhost:3001/favorites", id);
+            dispatch({
                 type: REMOVE_FAV,
-                payload: data, // myFavorites
+                payload: dogId,
             });
         } catch (error) {
-            console.log("removeFav not found", error);
+            console.error(error);
         };
     };
 };
 
-export function filterCards (gender) {
+export function filterTemps (temps) {
+    return {
+        type: FILTER_TEMPS,
+        payload: temps,
+    };
+}
+
+export function filterCards (filtered) {
     return {
         type: FILTER,
-        payload: gender,
+        payload: filtered,
     };
 };
 
@@ -104,17 +169,16 @@ export function reset () {
     };
 };
 
-export function prevPage(cOf) {
+export function prevPage (cOf) {
     return {
-      type: PREV_PAGE,
-      payload: cOf,
+        type: PREV_PAGE,
+        payload: cOf,
     };
-  }
+};
   
-  export function nextPage(cOf) {
+export function nextPage (cOf) {
     return {
-      type: NEXT_PAGE,
-      payload: cOf,
+        type: NEXT_PAGE,
+        payload: cOf,
     };
-  }
-  
+};

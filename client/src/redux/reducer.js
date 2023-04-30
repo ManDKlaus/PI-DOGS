@@ -1,10 +1,14 @@
-import { 
+import {
+    SEARCH_TEMPS,
     SEARCH_DOGS,
-    ADD_DOG,
+    SEARCH_DOG_BY_ID,
+    CREATE_DOG,
+    REMOVE_DOG,
     ACT_DOGS,
+    SEARCH_FAV,
     ADD_FAV,
     REMOVE_FAV,
-    GET_FAV,
+    FILTER_TEMPS,
     FILTER,
     ORDER,
     RESET,
@@ -13,122 +17,151 @@ import {
 } from "./actions/actionstypes.js";
 
 const initialState = {
-    favShow:[],
-    allFav: [],
-    dogsShow: [],
+    temperaments: [],
     allDogs: [],
+    dogsShow: [],
+    details: {},
+    allFavs: [],
+    favShow:[],
     removeds: [],
-    status: "",
-    gender: "",
+    lifeSpan: [false, false, false, false],
+    size: [false, false, false, false],
     location: [],
-    numPageChar: 1,
+    numPageDog: 1,
     numPageFav: 1,
 };
 
 export default function rootReducer (state=initialState,{type, payload}) {
     switch (type){
-        case ADD_DOG:
-            if (Array.isArray(payload)) {
-                const favoriteIds = state.allFav.map((fav) => fav.id); // obtienes un array con los ids de los personajes favoritos
-                const updatedChars = payload.map((char) => {
-                  if (favoriteIds.includes(char.id)) {
-                    return { ...char, isFav: true }; // actualizas la propiedad 'isFav' del personaje
-                  }
-                  return char;
-                });
+        case SEARCH_TEMPS:
+            return {
+                ...state,
+                temperaments: payload,
+            }
+        case SEARCH_DOGS:
+            if (payload.name){
                 return {
                     ...state,
-                    dogsShow: updatedChars,
-                    allDogs: updatedChars,
+                    dogsShow: [payload],
                 };
-            }
+            } else {
+                return {
+                    ...state,
+                    allDogs: payload,
+                };
+            };
+        case SEARCH_DOG_BY_ID:
+            return {
+                ...state,
+                dogsShow: [payload],
+            };
+        case CREATE_DOG:
+            return {
+                ...state,
+                dogsShow: payload,
+                allDogs: [...state.allDogs, payload],
+            };
+        case REMOVE_DOG:
+            const show = state.dogsShow.filter((e)=> e.id !== payload)
+            const all = state.allDogs.filter((e)=> e.id !== payload)
+            return {
+                ...state,
+                dogsShow: show,
+                allDogs: all,
+            };
         case ACT_DOGS:
             return {
                 ...state,
-                dogsShow: state.dogsShow.map((char) => {
-                    if (char.id === payload.id) {
-                        return {
-                            ...char,
-                            isFav: payload.isFav,
-                        };
-                    }
-                    return char;
-                }),
+                dogsShow: payload[0],
+                favShow: payload[1],
             };
-        case SEARCH_DOGS:
-            return {
-                ...state,
-                dogsShow: [...payload],
-            };
-        case GET_FAV:
-            const startIndex = (state.numPageFav - 1) * 20;
-            const endIndex = state.numPageFav * 20;
-            const slicedPayload = payload.slice(startIndex, endIndex);
+        case SEARCH_FAV:
             return {
               ...state,
-              favShow: slicedPayload,
-              allFav: payload,
+              favShow: payload,
+              allFavs: payload,
             };
         case ADD_FAV:
-            if (state.favShow.length < 20) {
-                return {
-                    ...state,
-                    favShow: payload,
-                    allFav: payload,
-                };
+            const aFav = state.dogsShow.find((e) => e.id === payload);
+            const updatedDogsShow = state.dogsShow.map((dog) =>
+                dog.id === aFav.id ? { ...dog, isFav: true } : dog
+            );
+            const updatedAllDogs = state.allDogs.map((dog) =>
+                dog.id === aFav.id ? { ...dog, isFav: true } : dog
+            );
+            return {
+                ...state,
+                favShow: [...state.favShow, aFav],
+                allFavs: [...state.allFavs, aFav],
+                dogsShow: updatedDogsShow,
+                allDogs: updatedAllDogs,
+            };
+        case REMOVE_FAV:
+            const rFavS = state.favShow.filter((e)=> e.id !== payload)
+            const rFavA = state.allFavs.filter((e)=> e.id !== payload)
+            return {
+                ...state,
+                favShow: rFavS,
+                allFavs: rFavA,
+            };
+        case FILTER_TEMPS:
+            const newDogs = state.dogsShow.filter(dog => {
+                const temps = dog.temperaments;
+                return temps.includes(payload);
+            });          
+            const newFavs = state.favShow.filter(dog => {
+                const temps = dog.temperaments;
+                return temps.includes(payload);
+            });
+            return {
+                ...state,
+                dogsShow: newDogs,
+                favShow: newFavs,
+            };
+        case FILTER:
+            const { id, checked } = payload;
+            const newLS = [...state.lifeSpan];
+            const newS = [...state.size];
+            const indexMap = {
+                switch1: 0,
+                switch2: 1,
+                switch3: 2,
+                switch4: 3,
+                switch5: 4,
+                switch6: 5,
+                switch7: 6,
+                switch8: 7,
+            };
+            const index = indexMap[id];
+            if (index !== undefined) {
+                if (checked) {
+                newLS[index] = true;
+                newS[index + 4] = true;
+                } else {
+                newLS[index] = false;
+                newS[index + 4] = false;
+                }
             }
             return {
                 ...state,
-                allFav: payload,
-            };
-        case REMOVE_FAV:
-            return {
-                ...state,
-                favShow: payload,
-                allFav: payload,
-            };
-        case FILTER:
-            const { id, value, checked } = payload;
-            const key = id === "switch1" || id === "switch2" || id === "switch3" ? "status" : "gender";
-            state[key] = checked ? value : "";
-            const filterChar = state.allDogs.filter((ch)=> {
-                if (state.status && ch.status !== state.status) {
-                  return false;
-                }
-                if (state.gender && ch.gender !== state.gender) {
-                  return false;
-                }
-                return true;
-              })
-            const filterFav = state.allFav.filter((ch)=> {
-                if (state.status && ch.status !== state.status) {
-                  return false;
-                }
-                if (state.gender && ch.gender !== state.gender) {
-                  return false;
-                }
-                return true;
-              })
-            return {
-                ...state,
-                dogsShow: filterChar,  
-                favShow: filterFav,        
+                lifeSpan: newLS,
+                size: newS,
             };
         case ORDER:
             const newOrder1 = state.allDogs.sort((a, b)=>{
-                if(a.id > b.id) {
+                if(a.name > b.name) {
                     return "Ascendente" === payload ? 1 : -1;
                 }
-                if(a.id < b.id) {
+                if(a.name < b.name) {
                     return "Descendente" === payload ? 1 : -1;
                 }
                 return 0;
             });
-            const newOrder2 = state.allFav.sort((a, b)=>{
-                if(a.id > b.id) {
+            const newOrder2 = state.allFavs.sort((a, b)=>{
+                if(a.name > b.name) {
                     return "Ascendente" === payload ? 1 : -1;
                 }
-                if(a.id < b.id) {
+                if(a.name < b.name) {
                     return "Descendente" === payload ? 1 : -1;
                 }
                 return 0;
@@ -141,10 +174,10 @@ export default function rootReducer (state=initialState,{type, payload}) {
         case RESET:
             return {
                 ...state,
-                status:"",
-                gender:"",
+                lifeSpan: [false, false, false, false],
+                size: [false, false, false, false],
                 dogsShow: [...state.allDogs],
-                favShow: [...state.allFav],        
+                favShow: [...state.allFavs],        
             };
         case NEXT_PAGE:
             if(payload === "Favoritos") {
@@ -154,8 +187,8 @@ export default function rootReducer (state=initialState,{type, payload}) {
                 };
             }
             return {
-            ...state,
-            numPageChar: state.numPageChar + 1,
+                ...state,
+                numPageDog: state.numPageDog + 1,
             };
         case PREV_PAGE:
             if(payload === "Favoritos") {
@@ -165,8 +198,8 @@ export default function rootReducer (state=initialState,{type, payload}) {
                 };
             }
             return {
-            ...state,
-            numPageChar: state.numPageChar - 1,
+                ...state,
+                numPageDog: state.numPageDog - 1,
             };
         default:
             return state;
