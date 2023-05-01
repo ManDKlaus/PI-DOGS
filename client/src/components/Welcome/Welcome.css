@@ -1,7 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=Bungee&display=swap');
+
 .Welcome {
-    text-align: center;
     width: 100%;
     height: 100%;
-    background-color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.Welcome > *:not(h1) {
+    position: relative;
+    z-index: 1;
+    margin: 10px;
+    width: 500px;
+    border: none;
+    border-radius: 5px;
+    font-size: .8em;
+    cursor: pointer;
+    padding: 15px 0;
+}
+
+.App.day .Welcome > *:not(h1) {
+    background-color: rgb(240, 240, 240);
+    box-shadow: 0 0 10px rgba(0,0,0,.2);
+}
+
+.App.night .Welcome > *:not(h1) {
+    background-color: rgb(15, 15, 15);
+    box-shadow: 0 0 10px rgba(250,250,250,.6);
+}
+
+.Welcome h1 {
+    margin: 0;
+    z-index: 1;
+    font-size: 140px;
+    font-family: 'Bungee', cursive;
+    line-height: 1;
+}
+
+.App.day .Welcome h1 {
+    color: white;
+    text-shadow: 0 0 10px rgba(0,0,0,.6);
+}
+
+.App.night .Welcome h1 {
     color: black;
-  }
+    text-shadow: 0 0 10px rgba(250,250,250,.6);
+}
+
+.Welcome #wel {
+    font-size: 1.2em;
+    background-color: white;
+    color: #202020;
+}
+
+.App.night .Welcome #wel {
+    box-shadow: 0 0 15px white;
+}
