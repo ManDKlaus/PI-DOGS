@@ -1,8 +1,4 @@
-import { useSelector, useDispatch } from 'react-redux';
-const dispatch = useDispatch();
-const { allDogs, allFavs, lifeSpan, size } = useSelector((s) => s);
-
-export function filter() {
+export function filter(dFilt, fFilt, lifeSpan, size) {
     let dFilt = allDogs;
     let fFilt = allFavs;
 

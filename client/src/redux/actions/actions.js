@@ -21,10 +21,10 @@ import axios from "axios";
 export function searchTemps () {
     return async (dispatch) => {
         try {
-            const temps = await axios.get('http://localhost:3001/temperaments');
+            const temps = (await axios.get('http://localhost:3001/temperaments')).data;
             dispatch({
                 type: SEARCH_TEMPS,
-                payload: temps
+                payload: temps,
             });
         } catch (error) {
             console.error(error);
@@ -37,9 +37,9 @@ export function searchDogs (name) {
         let dogs = [];
         try {
             if (name) {
-                dogs = await axios.get(`http://localhost:3001/dogs?name=${name}`)
+                dogs = (await axios.get(`http://localhost:3001/dogs?name=${name}`)).data;
             } else {
-                dogs = await axios.get("http://localhost:3001/dogs")
+                dogs = (await axios.get("http://localhost:3001/dogs")).data;
             }
             dispatch({
                 type: SEARCH_DOGS,

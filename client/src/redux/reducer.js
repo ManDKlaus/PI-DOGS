@@ -18,6 +18,7 @@ import {
 
 const initialState = {
     temperaments: [],
+    tempsFilt: [],
     allDogs: [],
     dogsShow: [],
     details: {},

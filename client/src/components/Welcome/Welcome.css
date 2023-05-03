@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Bungee&display=swap');
-
 .Welcome {
     width: 100%;
     height: 100%;
@@ -27,8 +25,8 @@
 }
 
 .App.night .Welcome > *:not(h1) {
-    background-color: rgb(15, 15, 15);
-    box-shadow: 0 0 10px rgba(250,250,250,.6);
+    background-color: #404040;
+    box-shadow: 0 0 10px rgba(250,250,250,.3);
 }
 
 .Welcome h1 {
@@ -40,21 +38,28 @@
 }
 
 .App.day .Welcome h1 {
-    color: white;
-    text-shadow: 0 0 10px rgba(0,0,0,.6);
+    color: #303030;
+    text-shadow: 0 0 10px rgba(0,0,0,.8);
 }
 
 .App.night .Welcome h1 {
-    color: black;
-    text-shadow: 0 0 10px rgba(250,250,250,.6);
+    color: white;
+    text-shadow: 0 0 10px rgba(250,250,250,.8);
 }
 
 .Welcome #wel {
     font-size: 1.2em;
-    background-color: white;
-    color: #202020;
+    text-transform: uppercase;
+}
+
+.App.day .Welcome #wel {
+    background-color: #303030;
+    box-shadow: 0 0 10px rgba(0,0,0,.3);
+    color: white;
 }
 
 .App.night .Welcome #wel {
-    box-shadow: 0 0 15px white;
+    background-color: rgb(240, 240, 240);
+    box-shadow: 0 0 10px rgba(250,250,250,.8);
+    color: #202020;
 }
