@@ -10,7 +10,7 @@ import Temperaments from "./components/Temperaments/Temperaments.jsx";
 import About from './components/About/About.jsx' ;
 import Details from "./components/Details/Details.jsx"
 import Footer from "./components/Footer/Footer.jsx";
-import { searchTemps, searchDogs } from "./redux/actions/actions.js"
+import { searchTemps, searchDogs, searchFav } from "./redux/actions/actions.js"
 
 function App() {
 
@@ -18,8 +18,9 @@ function App() {
    const dispatch = useDispatch();
 
    useEffect(() => {
-      dispatch(searchTemps());
       dispatch(searchDogs());
+      dispatch(searchTemps());
+      dispatch(searchFav());
    }, [dispatch]);
 
    useEffect(() => {

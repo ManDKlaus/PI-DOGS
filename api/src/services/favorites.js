@@ -2,27 +2,6 @@ const axios = require("axios");
 
 const { searchFav, addFavorites, eraseFavorite } = require("../controllers/favorites")
 
-async function postFavorites (req, res) {
-    const {id} = req.body;
-    try {
-        const newFav = addFavorites(id);
-        res.status(200).json({ message: "Add to Favorites"});
-    } catch (error) {
-        res.status(500).json({ message: "Not added to Favorites: Id not found" });
-    }
-};
-
-const deleteFavorite = async (req, res) => {
-    const {id} = req.body;
-    try {
-        const oldFav = await eraseFavorite(id);
-        res.status(200).json({ message: "Favorite has been deleted" });
-    } catch (error) {
-        res.status(500).json({ message: "Not deleted of favorite: Id not found"});
-    }
-
-}
-
 async function getFavorites (req, res) {
     try {
         const favorites = await searchFav();
@@ -31,6 +10,26 @@ async function getFavorites (req, res) {
         res.status(500).json({ message: error.message });
     }
 };
+
+async function postFavorites (req, res) {
+    const { dogId } = req.body;
+    try {
+        const newFav = await addFavorites(dogId);
+        res.status(200).json(newFav);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+async function deleteFavorite (req, res) {
+    const { id } = req.params;
+    try {
+        const idExFav = await eraseFavorite(id);
+        res.status(200).json(idExFav);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
 
 module.exports = {
     getFavorites,

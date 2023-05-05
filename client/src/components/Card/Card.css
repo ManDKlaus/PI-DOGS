@@ -1,0 +1,78 @@
+.Card {
+    width: 130px;
+    height: 300px;
+    position: relative;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+  
+
+.Card img {
+    position: absolute;
+    top: -20px;
+    left: 17px;
+    width: 90%;
+    height: 40%;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.Card a {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+}
+
+.App.day .Card a {
+    background: white;
+    color: #202020;
+    box-shadow: 0 0 10px rgba(0, 0, 0, .2);
+}
+
+.App.day .Card .selected {
+    background: #303030;
+    color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, .2);
+}
+
+.App.night .Card a {
+    background: #303030;
+    color: white;
+    box-shadow: 0 0 10px rgba(250, 250, 250, .2);
+}
+
+.App.night .Card .selected {
+    background: white;
+    color: #202020;
+    box-shadow: 0 0 10px rgba(250, 250, 250, .2);
+}
+
+.Card a  {
+    height: 100%;
+}
+
+.Card a .name {
+    font-size: 16px;
+    margin-top: 105px;
+}
+
+.Card a h3 {
+    font-size: 14px;
+    margin: 8px;
+}
+
+.Card a h4 {
+    font-size: 12px;
+    margin: 0;
+}  
+
+.Card button {
+    position: absolute;
+    top: 70px;
+    right: -10px;
+    background: none;
+    margin: 5px;
+}

@@ -24,7 +24,7 @@ async function postDog (req, res) {
     } catch (error) {
         res.status(500).json({ message: error.message });
     };
-}
+};
 
 async function deleteDog (req, res) {
     const { id } = req.body;
@@ -35,8 +35,7 @@ async function deleteDog (req, res) {
         console.error(error);
         res.status(500).json({ message: error.message });
     };
-};  
-
+};
 
 async function getDogById (req, res) {
     const {id} = req.params;
@@ -46,7 +45,7 @@ async function getDogById (req, res) {
     } catch (error) {
         res.status(500).json({ message: "Dog not found" });
     };
-}
+};
 
 async function getDogs (req, res) {
     const {name} = req.query;
@@ -61,7 +60,7 @@ async function getDogs (req, res) {
     } catch (error) {
         res.status(500).json({ message: error.message });
     };
-}
+};
 
 module.exports = {
     getDogById,

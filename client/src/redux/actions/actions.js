@@ -94,6 +94,7 @@ export function removeDog ( dogId ) {
 };
 
 export function actDogs (dogs) {
+    console.log("dogs", dogs)
     return {
         type: ACT_DOGS,
         payload: dogs,
@@ -103,7 +104,7 @@ export function actDogs (dogs) {
 export function searchFav () {
     return async function (dispatch) {
         try {
-            const favorites = await axios.get("http://localhost:3001/favorites")
+            const favorites = (await axios.get("http://localhost:3001/favorites/")).data;
             dispatch({
                 type: SEARCH_FAV,
                 payload: favorites,
@@ -114,13 +115,13 @@ export function searchFav () {
     };
 };
 
-export function addFav (id) {
+export function addFav (dogId) {
     return async function (dispatch) {
         try {
-            const dogId = await axios.post("http://localhost:3001/favorites", id);
+            const newFav = (await axios.post("http://localhost:3001/favorites", { dogId: dogId })).data;
             dispatch({
                 type: ADD_FAV,
-                payload: dogId,
+                payload: newFav,
             });
         } catch (error) {
             console.error(error);
@@ -128,13 +129,13 @@ export function addFav (id) {
     };
 };
 
-export function removeFav (id) {
+export function removeFav (dogId) {
     return async function (dispatch) {
         try {
-            const dogId = await axios.delete("http://localhost:3001/favorites", id);
+            const idExFav = (await axios.delete(`http://localhost:3001/favorites/${dogId}`)).data;
             dispatch({
                 type: REMOVE_FAV,
-                payload: dogId,
+                payload: idExFav,
             });
         } catch (error) {
             console.error(error);

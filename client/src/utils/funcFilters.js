@@ -1,66 +1,69 @@
-export function filter(dFilt, fFilt, lifeSpan, size) {
-    let dFilt = allDogs;
-    let fFilt = allFavs;
-
+export async function filter(allDogs, allFavs, lifeSpan, size) {
+    let dFilt = [];
+    let fFilt = [];
     if (lifeSpan[0]) {
-        dFilt = filterLifeSpan(dFilt, fFilt, 0, 12);
-        fFilt = filterLifeSpan(dFilt, fFilt, 0, 12);
-    };
+        dFilt = dFilt.concat(filterLifeSpan(allDogs, 0, 10));
+        fFilt = fFilt.concat(filterLifeSpan(allFavs, 0, 10));
+    }
     if (lifeSpan[1]) {
-        dFilt = filterLifeSpan(dFilt, fFilt, 13, 14);
-        fFilt = filterLifeSpan(dFilt, fFilt, 13, 14);
-    };
+        dFilt = dFilt.concat(filterLifeSpan(allDogs, 11, 12));
+        fFilt = fFilt.concat(filterLifeSpan(allFavs, 11, 12));
+    }
     if (lifeSpan[2]) {
-        dFilt = filterLifeSpan(dFilt, fFilt, 15, 18);
-        fFilt = filterLifeSpan(dFilt, fFilt, 15, 18);
-    };
+        dFilt = dFilt.concat(filterLifeSpan(allDogs, 13, 14));
+        fFilt = fFilt.concat(filterLifeSpan(allFavs, 13, 14));
+    }
     if (lifeSpan[3]) {
-        dFilt = filterLifeSpan(dFilt, fFilt, 19);
-        fFilt = filterLifeSpan(dFilt, fFilt, 19);
-    };
+        dFilt = dFilt.concat(filterLifeSpan(allDogs, 15));
+        fFilt = fFilt.concat(filterLifeSpan(allFavs, 15));
+    }
     if (size[0]) {
-        dFilt = filterSize(dFilt, fFilt, "toy");
-        fFilt = filterSize(dFilt, fFilt, "toy");
-    };
+        dFilt = dFilt.concat(filterSize(allDogs, "Toy"));
+        fFilt = fFilt.concat(filterSize(allFavs, "Toy"));
+    }
     if (size[1]) {
-        dFilt = filterSize(dFilt, fFilt, "small");
-        fFilt = filterSize(dFilt, fFilt, "small");
-    };
+        dFilt = dFilt.concat(filterSize(allDogs, "Small"));
+        fFilt = fFilt.concat(filterSize(allFavs, "Small"));
+    }
     if (size[2]) {
-        dFilt = filterSize(dFilt, fFilt, "medium");
-        fFilt = filterSize(dFilt, fFilt, "medium");
-    };
+        dFilt = dFilt.concat(filterSize(allDogs, "Medium"));
+        fFilt = fFilt.concat(filterSize(allFavs, "Medium"));
+    }
     if (size[3]) {
-        dFilt = filterSize(dFilt, fFilt, "large");
-        fFilt = filterSize(dFilt, fFilt, "large");
-    };
-    return [dFilt, fFilt]
-};
+        dFilt = dFilt.concat(filterSize(allDogs, "Large"));
+        fFilt = fFilt.concat(filterSize(allFavs, "Large"));
+    }
+    
+    // Eliminar elementos duplicados
+    dFilt = [...new Set(dFilt)];
+    fFilt = [...new Set(fFilt)];
+  
+    if (dFilt.length === 0 && fFilt.length === 0) {
+        dFilt = [...allDogs];
+        fFilt = [...allFavs];
+    }
+  
+    return [dFilt, fFilt];
+}
+  
 
-function filterSize(dFilt, fFilt, size) {
-    const filterDogs = dFilt.filter((dog)=> {
+
+function filterSize(dogs, size) {
+    const filterDogs = dogs.filter((dog)=> {
         if (size && dog.size !== size) {
           return false;
         };
         return true;
     });
-    const filterFavs = fFilt.filter((dog)=> {
-        if (size && dog.size !== size) {
-          return false;
-        };
-        return true;
-    });
-    return [filterDogs, filterFavs]
+    console.log("size", filterDogs)
+    return filterDogs;
 };
 
-function filterLifeSpan(dFilt, fFilt, min, max) {
-    const filterDogs = dFilt.filter((dog) => {
-        const [minLS, maxLS] = dog.lifeSpan.split(' - ').map((age) => Number(age.replace(/\D/g, '')));
+function filterLifeSpan(dogs, min, max) {
+    const filterDogs = dogs.filter((dog) => {
+        const [minLS, maxLS] = dog.lifeSpan && dog.lifeSpan.includes('-') ? dog.lifeSpan.split(' - ').map((age) => Number(age.replace(/\D/g, ''))) : [0, 0];
         return minLS <= max && maxLS >= min;
     });
-    const filterFavs = fFilt.filter((dog) => {
-        const [minLS, maxLS] = dog.lifeSpan.split(' - ').map((age) => Number(age.replace(/\D/g, '')));
-        return minLS <= max && maxLS >= min;
-    });
-    return [filterDogs, filterFavs]
+    console.log("life", filterDogs)
+    return filterDogs;
 };

@@ -8,6 +8,6 @@ const { getFavorites, postFavorites, deleteFavorite } = require('../services/fav
  
 router.get('/', getFavorites); 
 router.post('/', postFavorites);
-router.delete('/', deleteFavorite);
+router.delete('/:id', deleteFavorite);
 
 module.exports = router;

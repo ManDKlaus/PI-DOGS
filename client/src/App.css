@@ -18,6 +18,7 @@
   box-sizing: border-box;
   font-family: 'Jost', sans-serif;
   user-select: none;
+  transition: .4s;
 }
 
 .App-logo {
@@ -36,9 +37,9 @@ ul {
   padding: 0;
 }
 
-button,
-a,
-li {
+.App button,
+.App a,
+.App li {
   text-decoration: none;
   color: inherit;
   cursor: pointer;
