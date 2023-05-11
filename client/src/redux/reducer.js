@@ -2,31 +2,28 @@ import {
     SEARCH_TEMPS,
     SEARCH_DOGS,
     SEARCH_DOG_BY_ID,
-    CREATE_DOG,
+    CREATE_OR_EDIT_DOG,
     REMOVE_DOG,
     ACT_DOGS,
     SEARCH_FAV,
     ADD_FAV,
     REMOVE_FAV,
     FILTER_TEMPS,
-    FILTER,
     ORDER,
     RESET,
-    NEXT_PAGE,
-    PREV_PAGE,
+    SEE_DETAILS,
+    EDIT_DOG,
 } from "./actions/actionstypes.js";
 
 const initialState = {
     temperaments: [],
-    tempsFilt: [],
+    tempsFiltD: [],
     allDogs: [],
     dogsShow: [],
     details: {},
     allFavs: [],
     favShow:[],
-    removeds: [],
-    lifeSpan: [false, false, false, false],
-    size: [false, false, false, false],
+    editable: {},
     location: [],
     numPageDog: 1,
     numPageFav: 1,
@@ -45,23 +42,47 @@ export default function rootReducer (state=initialState,{type, payload}) {
                     ...state,
                     dogsShow: [...payload[0]],
                 };
-            } else {
-                return {
-                    ...state,
-                    dogsShow: [...payload[0]],
-                    allDogs: [...payload[0]],
-                };
+            };
+            return {
+                ...state,
+                dogsShow: [...payload[0]],
+                allDogs: [...payload[0]],
+                details: payload[0][0],
             };
         case SEARCH_DOG_BY_ID:
             return {
                 ...state,
                 dogsShow: [payload],
             };
-        case CREATE_DOG:
-            return {
-                ...state,
-                dogsShow: payload,
-                allDogs: [...state.allDogs, payload],
+        case CREATE_OR_EDIT_DOG:
+            let newListShow = [...state.dogsShow];
+            let newListAll = [...state.allDogs];
+            let favListShow = [...state.favShow];
+            let favListAll = [...state.allFavs];
+            const positionShow = newListShow.findIndex((dog) => dog.id === payload.id);
+            const positionAll = newListAll.findIndex((dog) => dog.id === payload.id);
+            const posFavShow = favListShow.findIndex((dog) => dog.id === payload.id);
+            const posFavAll = favListAll.findIndex((dog) => dog.id === payload.id);
+            if (positionShow !== undefined && positionShow !== -1) {
+                newListShow[positionShow] = payload;
+                newListAll[positionAll] = payload;
+                favListShow[posFavShow] = payload;
+                favListAll[posFavAll] = payload;
+                return {
+                    ...state,
+                    details: payload,
+                    dogsShow: [...newListShow],
+                    allDogs: [...newListAll],
+                    favShow: posFavShow !== undefined && posFavShow !== -1 ? [...favListShow] : [...state.favShow],
+                    allFavs: posFavAll !== undefined && posFavAll !== -1 ? [...favListAll] : [...state.allFavs],
+                };
+            } else {
+                return {
+                    ...state,
+                    details: payload,
+                    dogsShow: [payload, ...newListShow],
+                    allDogs: [payload, ...newListAll],
+                };
             };
         case REMOVE_DOG:
             const show = state.dogsShow.filter((e)=> e.id !== payload)
@@ -74,8 +95,7 @@ export default function rootReducer (state=initialState,{type, payload}) {
         case ACT_DOGS:
             return {
                 ...state,
-                dogsShow: payload[0],
-                favShow: payload[1],
+                dogsShow: payload,
             };
         case SEARCH_FAV:
             return {
@@ -84,40 +104,40 @@ export default function rootReducer (state=initialState,{type, payload}) {
               allFavs: payload.favorites,
             };
         case ADD_FAV:
-            const aFav = state.dogsShow.find((e) => e.id === payload.dogId);
-            aFav.favId = payload.id;
+            const dogId = payload.dogId || payload;
+            const aFav = state.dogsShow.find((dog) => dog.id === dogId);
+            aFav.isFav = true;
+            const actADetails = { ...state.details, isFav: dogId === state.details.id };
+            if (state.favShow.findIndex((dog) => dog.id === dogId) !== -1) break;
             return {
                 ...state,
+                details: actADetails,
                 favShow: [...state.favShow, aFav],
                 allFavs: [...state.allFavs, aFav],
-                dogsShow: state.dogsShow.map((dog) =>
-                    dog.id === aFav.id ? { ...dog, isFav: true } : dog
-                ),
-                allDogs: state.allDogs.map((dog) =>
-                    dog.id === aFav.id ? { ...dog, isFav: true } : dog
-                ),
+                dogsShow: state.dogsShow.map((dog) => (dog.id === dogId ? { ...dog, isFav: true } : dog)),
+                allDogs: state.allDogs.map((dog) => (dog.id === dogId ? { ...dog, isFav: true } : dog)),
             };
         case REMOVE_FAV:
-            const exId = parseInt(payload);
+            let exId;
+            /^\d+$/.test(payload) ? exId = parseInt(payload) : exId = payload;
+            console.log(payload)
             const rFavS = state.favShow.filter((e)=> e.id !== exId)
             const rFavA = state.allFavs.filter((e)=> e.id !== exId)
+            const rFavFS = state.dogsShow.map((dog) => dog.id === exId ? { ...dog, isFav: false } : dog);
+            const rFavFA = state.allDogs.map((dog) => dog.id === exId ? { ...dog, isFav: false } : dog);
+            let actDetails = state.details;
+            if (actDetails.id === exId) actDetails.isFav = false;
             return {
                 ...state,
+                details: actDetails,
                 favShow: rFavS,
                 allFavs: rFavA,
+                dogsShow: rFavFS,
+                allDogs: rFavFA,
             };
         case FILTER_TEMPS:
-            if (payload) {
+            if (payload[0]) {
                 const newDogs = state.allDogs.filter(dog => {
-                    const temps = dog.temperaments;
-                    console.log(temps)
-                    if (temps) {
-                        return payload.every(temp => temps.includes(temp));
-                    } else {
-                        return false;
-                    };
-                });
-                const newFavs = state.allFavs.filter(dog => {
                     const temps = dog.temperaments;
                     if (temps) {
                         return payload.every(temp => temps.includes(temp));
@@ -127,47 +147,16 @@ export default function rootReducer (state=initialState,{type, payload}) {
                 });
                 return {
                     ...state,
+                    tempsFiltD: newDogs,
                     dogsShow: newDogs,
-                    favShow: newFavs,
                 };
             };
             return {
                 ...state,
                 dogsShow: state.allDogs,
-                favShow: state.allFavs,
-            };
-        case FILTER:
-            const { id, checked } = payload;
-            const newLS = [...state.lifeSpan];
-            const newS = [...state.size];
-            const indexMap = {
-                switch1: 0,
-                switch2: 1,
-                switch3: 2,
-                switch4: 3,
-                switch5: 4,
-                switch6: 5,
-                switch7: 6,
-                switch8: 7,
-            };
-            const index = indexMap[id];
-            if (index !== undefined) {
-                if (checked) {
-                newLS[index] = true;
-                newS[index + 4] = true;
-                } else {
-                newLS[index] = false;
-                newS[index + 4] = false;
-                }
-            }
-            console.log("newLS", newLS)
-            return {
-                ...state,
-                lifeSpan: newLS,
-                size: newS,
             };
         case ORDER:
-            const newOrder1 = state.allDogs.sort((a, b)=>{
+            const newOrder1 = state.dogsShow.sort((a, b)=>{
                 if(a.name > b.name) {
                     return "Ascendente" === payload ? 1 : -1;
                 }
@@ -176,7 +165,7 @@ export default function rootReducer (state=initialState,{type, payload}) {
                 }
                 return 0;
             });
-            const newOrder2 = state.allFavs.sort((a, b)=>{
+            const newOrder2 = state.favShow.sort((a, b)=>{
                 if(a.name > b.name) {
                     return "Ascendente" === payload ? 1 : -1;
                 }
@@ -193,32 +182,17 @@ export default function rootReducer (state=initialState,{type, payload}) {
         case RESET:
             return {
                 ...state,
-                lifeSpan: [false, false, false, false],
-                size: [false, false, false, false],
                 dogsShow: [...state.allDogs],
-                favShow: [...state.allFavs],        
             };
-        case NEXT_PAGE:
-            if(payload === "Favoritos") {
-                return {
-                    ...state,
-                    numPageFav: state.numPageFav + 1,
-                };
-            }
+        case SEE_DETAILS:
             return {
                 ...state,
-                numPageDog: state.numPageDog + 1,
+                details: payload,
             };
-        case PREV_PAGE:
-            if(payload === "Favoritos") {
-                return {
-                    ...state,
-                    numPageFav: state.numPageFav - 1,
-                };
-            }
+        case EDIT_DOG:
             return {
                 ...state,
-                numPageDog: state.numPageDog - 1,
+                editable: payload,
             };
         default:
             return state;

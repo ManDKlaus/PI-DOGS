@@ -1,6 +1,6 @@
 import './Dogs.css';
 import { useState } from 'react'
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import NavSet from '../NavSet/NavSet.jsx';
 import Card from '../Card/Card.jsx';
 
@@ -9,37 +9,35 @@ export default function Dogs() {
   const [pageDogs, setPageDogs] = useState(1);
   const [pageFavs, setPageFavs] = useState(1);
   const [numDogs, setNumDogs] = useState(8);
-  const dispatch = useDispatch();
 
   const handleNumDogs = (e) => {
     setNumDogs(e.target.value);
-    console.log(e)
   }
   
-  const dogsToShow = dogsShow.slice((pageDogs - 1) * 8, pageDogs * 8);
-  const favsToShow = favShow.slice((pageFavs - 1) * numDogs, pageFavs * numDogs);
+  const dogsToShow = dogsShow?.slice((pageDogs - 1) * 8, pageDogs * 8);
+  const favsToShow = favShow?.slice((pageFavs - 1) * numDogs, pageFavs * numDogs);
 
-  const dogsView = dogsToShow.map((dog) => (
+  const dogsView = dogsToShow?.map((dog) => (
     <li key={ dog.id } >
       <Card dog={ dog } />
     </li>
   ));
 
-  const favsView = favsToShow.map((fav) => (
-    <li key={ fav.favId } >
+  const favsView = favsToShow?.map((fav) => (
+    <li key={ fav.id + "b" } >
       <Card dog={ fav } />
     </li>
   ));
 
   const paginationDogs = [];
-  for (let i = 1; i <= Math.ceil(dogsShow.length / 8); i++) {
+  for (let i = 1; i <= Math.ceil(dogsShow?.length / 8); i++) {
     paginationDogs.push(
       <button key={i + "a"} onClick={() => setPageDogs(i)} className={ pageDogs === i ? 'selected' : '' } >{i}</button>
     );
   };
 
   const paginationFavs = [];
-  for (let i = 1; i <= Math.ceil(favShow.length / numDogs); i++) {
+  for (let i = 1; i <= Math.ceil(favShow?.length / numDogs); i++) {
     paginationFavs.push(
       <button key={i + "b"} onClick={() => setPageFavs(i)} className={ pageFavs === i ? 'selected' : '' } >{i}</button>
     );

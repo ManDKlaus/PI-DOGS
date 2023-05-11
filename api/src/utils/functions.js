@@ -53,6 +53,24 @@ async function infoId (data){
     };
 };
 
+async function infoCreated (data) {
+    if (data) {
+        let dog = {
+            id: data.id,
+            name:data.name,
+            weight: data.weight,
+            height: data.height,
+            temperaments: data.temperaments.map(t => t.dataValues.name),
+            lifeSpan: data.lifeSpan,
+            image: data.image,
+            isFav: data.isFav,
+            size: await getSize(data.weight, data.height),
+            created: data.created,
+        };
+        return dog;
+    };
+};
+
 async function isFavTrue (id) {    
     const favsDB = await Favorite.findAll();
     for (let i = 0; i < favsDB.length; i++) {
@@ -87,5 +105,6 @@ module.exports = {
     infoAPI,
     infoAPIByName,
     isFavTrue,
-    infoId
+    infoId,
+    infoCreated
 };

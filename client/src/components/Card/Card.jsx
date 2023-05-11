@@ -1,7 +1,7 @@
 import "./Card.css";
 import React from 'react'
 import { useDispatch } from 'react-redux';
-import { removeDog, addFav, removeFav } from '../../redux/actions/actions';
+import { removeDog, addFav, removeFav, seeDetails, editDog } from '../../redux/actions/actions';
 
 export default function Card({ dog }) {
   const dispatch = useDispatch();
@@ -18,13 +18,26 @@ export default function Card({ dog }) {
     };
   };
 
-  function handleCreate () {
+  function editCreation () {
+    console.log("dog",dog)
+    dispatch(editDog(dog));
+  };
+
+  function removeCreation () {
     dispatch(removeDog(dog.id));
+  };
+
+  function showDetails () {
+    dispatch(seeDetails(dog));
   };
 
   return (
     <div className='Card' >
-      <a href='#Details' className={ dog.isFav === true ? 'selected' : ''} >
+      <a 
+        href='#Details'
+        onClick={ showDetails }
+        className={ dog.isFav === true ? 'selected' : ''}
+      >
         <img src={ dog.image } alt={ dog.name } />
         <h3 className="name">{ dog.name }</h3>
         <div>
@@ -40,26 +53,40 @@ export default function Card({ dog }) {
         dog.isFav === true ? (
           <button
             cursor="pointer"
-            className="izq"
+            className="favA"
             onClick={ handleFavorite }>
-              ❤️
+              ❤️<span>remove</span>
           </button>
         ) : (
           <button
             cursor="pointer"
-            className="izq"
+            className="favR"
             onClick={ handleFavorite }>
-              🤍
+              🤍<span>add</span>
           </button>
         )
       }
       {
         !dog.created ? null : <button
         cursor="pointer"
-        className="izq"
-        onClick={ handleCreate }>
-          🗑
-      </button>
+        className="edit"
+        onClick={ editCreation }>
+          <span className="material-symbols-rounded">
+            edit
+          </span>
+          <span>edit</span>
+        </button>
+      }
+      {
+        !dog.created ? null : <button
+        cursor="pointer"
+        className="delete"
+        onClick={ removeCreation }>
+          <span className="material-symbols-rounded">
+            delete
+          </span>
+          <span> delete</span>
+        </button>
       }
     </div>
   )

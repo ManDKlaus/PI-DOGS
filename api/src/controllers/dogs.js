@@ -4,12 +4,19 @@ const Op = Sequelize.Op;
 
 require("dotenv").config() // Objeto process con la propiedad env
 
-const { infoAPI, infoId, infoAPIByName } = require("../utils/functions.js")
+const { infoAPI, infoId, infoAPIByName, infoCreated } = require("../utils/functions.js")
 const { Dog, Temperament } = require("../db.js")
 const { API_URL } = process.env;
 
-const createOrEditDog = async (id, dog, temperamentsId) => {
+const createOrEditDog = async (id, dog, temperaments) => {
     let createdDog;
+
+    const temperamentsId = await Promise.all(temperaments.map(name => {
+        return Temperament.findOrCreate({
+            where: { name },
+            defaults: { name }
+        }).then(([temperament]) => temperament.id);
+    }));
   
     if (!id) {
         createdDog = await Dog.create(dog);
@@ -19,8 +26,8 @@ const createOrEditDog = async (id, dog, temperamentsId) => {
             await createdDog.update(dog);
         } else {
             throw new Error("Error edit: Dog not found");
-        }
-    }
+        };
+    };
   
     await createdDog.setTemperaments(temperamentsId);
   
@@ -34,11 +41,13 @@ const createOrEditDog = async (id, dog, temperamentsId) => {
         },
     });
 
+    const newDog = await infoCreated(dogCreated.dataValues);
+
     if (!dogCreated) {
         throw new Error("Failed to create dog");
     }
   
-    return dogCreated;
+    return newDog;
 };
 
 const eraseDog = async (id) => {
@@ -59,7 +68,8 @@ const searchDogById = async (id) => {
                 }
             }
         });
-        return dog;
+        const newDog = await infoCreated(dog.dataValues);
+        return newDog;
     } else {
         let dog = (await axios.get(`${API_URL}/${id}`)).data;
         dog = infoId(dog);
@@ -84,7 +94,8 @@ const searchDogsByName = async (name) => {
             }
         }
     });
-    const dogs = [...dogsName, ...dogsByNameDB]
+    const newDogsDB = await Promise.all(dogsByNameDB.map(dog => Promise.resolve(infoCreated(dog.dataValues))));
+    const dogs = [...newDogsDB, ...dogsName]
     if (!dogs) {        
         throw new Error("DogsByName not found");
     }
@@ -99,7 +110,7 @@ const searchAllDogs = async () => {
     const temperaments = new Set(
         await dogsAPI.flatMap((dog) =>
         dog.temperaments ? dog.temperaments : []
-        ).filter((temp) => temp !== "")
+        ).filter((temp) => temp !== "").sort()
     );
 
     await Promise.all([...temperaments].map((name) =>
@@ -115,7 +126,8 @@ const searchAllDogs = async () => {
             }
         }
     });
-    const dogs = [...dogsAPI, ...dogsDB]
+    const newDogsDB = await Promise.all(dogsDB.map(dog => Promise.resolve(infoCreated(dog.dataValues))));
+    const dogs = [...newDogsDB, ...dogsAPI]
     if (!dogs) {        
         throw new Error("AllDogs not found");
     }

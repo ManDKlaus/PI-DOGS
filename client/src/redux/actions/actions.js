@@ -2,18 +2,17 @@ import {
     SEARCH_TEMPS,
     SEARCH_DOGS,
     SEARCH_DOG_BY_ID,
-    CREATE_DOG,
+    CREATE_OR_EDIT_DOG,
     REMOVE_DOG,
     ACT_DOGS,
     SEARCH_FAV,
     ADD_FAV,
     REMOVE_FAV,
     FILTER_TEMPS,
-    FILTER,
     ORDER,
     RESET,
-    NEXT_PAGE,
-    PREV_PAGE,
+    SEE_DETAILS,
+    EDIT_DOG,
 } from "./actionstypes.js";
 
 import axios from "axios";
@@ -37,7 +36,7 @@ export function searchDogs (name) {
         let dogs = [];
         try {
             if (name) {
-                dogs = (await axios.get(`http://localhost:3001/dogs?name=${name}`)).data;
+                dogs = (await axios.get(`http://localhost:3001/dogs?name=${ name }`)).data;
             } else {
                 dogs = (await axios.get("http://localhost:3001/dogs")).data;
             }
@@ -51,10 +50,10 @@ export function searchDogs (name) {
     };
 };
 
-export function searchDogbyId ( dogId ) {
+export function searchDogById (id) {
     return async function (dispatch) {
         try {
-            const dog = await axios.post(`http://localhost:3001/dogs/${dogId}`);
+            const dog = (await axios.get(`http://localhost:3001/dogs/${ id }`)).data;
             dispatch({
                 type: SEARCH_DOG_BY_ID,
                 payload: dog,
@@ -65,13 +64,13 @@ export function searchDogbyId ( dogId ) {
     };
 };
 
-export function createDog ( data ) {
+export function createOrEditDog (dataDog) {
     return async function (dispatch) {
         try {
-            const newDog = await axios.post("http://localhost:3001/dogs", data);
+            const dog = (await axios.post("http://localhost:3001/dogs", dataDog)).data;
             dispatch({
-                type: CREATE_DOG,
-                payload: newDog,
+                type: CREATE_OR_EDIT_DOG,
+                payload: dog,
             });
         } catch (error){
             console.error(error);
@@ -79,7 +78,7 @@ export function createDog ( data ) {
     };
 };
 
-export function removeDog ( dogId ) {
+export function removeDog (dogId) {
     return async function (dispatch) {
         try {
             await axios.delete("http://localhost:3001/dogs", dogId);
@@ -94,7 +93,6 @@ export function removeDog ( dogId ) {
 };
 
 export function actDogs (dogs) {
-    console.log("dogs", dogs)
     return {
         type: ACT_DOGS,
         payload: dogs,
@@ -150,13 +148,6 @@ export function filterTemps (temps) {
     };
 }
 
-export function filterCards (filtered) {
-    return {
-        type: FILTER,
-        payload: filtered,
-    };
-};
-
 export function orderCards (order) {
     return {
         type: ORDER,
@@ -170,16 +161,16 @@ export function reset () {
     };
 };
 
-export function prevPage (cOf) {
+export function seeDetails (dog) {
     return {
-        type: PREV_PAGE,
-        payload: cOf,
+        type: SEE_DETAILS,
+        payload: dog,
     };
 };
-  
-export function nextPage (cOf) {
+
+export function editDog (dog) {
     return {
-        type: NEXT_PAGE,
-        payload: cOf,
+        type: EDIT_DOG,
+        payload: dog,
     };
 };

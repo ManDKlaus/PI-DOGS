@@ -4,8 +4,8 @@
     position: relative;
     padding: 10px;
     margin-bottom: 20px;
+    letter-spacing: .8px;
 }
-  
 
 .Card img {
     position: absolute;
@@ -67,12 +67,67 @@
 .Card a h4 {
     font-size: 12px;
     margin: 0;
-}  
+}
 
 .Card button {
     position: absolute;
-    top: 70px;
-    right: -10px;
+    top: 80px;
+    right: 0px;
     background: none;
-    margin: 5px;
+    margin: 0px;
+    padding: 5px;
+    z-index: 2;
+}
+
+.Card button span:last-child {
+    display: none;
+}
+
+.Card button span {
+    font-size: 20px;
+}
+
+.Card button span:last-child{
+    font-size: 16px;
+}
+
+.Card button:hover span {
+    display: flex;
+}
+
+.Card button:hover {
+    display: flex;
+    align-items: flex-end;
+    background: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, .2);
+    color: #202020;
+    gap: 5px;
+    border-radius: 5px;
+}
+
+.Card .favA:hover {
+    right: -58px;
+}
+
+.Card .favR:hover {
+    right: -32px;
+}
+
+.Card .edit {
+    top: 30px;
+    right: 0;
+    font-size: 5px;
+}
+
+.Card .edit:hover {
+    right: -31px;
+}
+
+.Card .delete {
+    top: -15px;
+    right: 0;
+}
+
+.Card .delete:hover {
+    right: -49px;
 }

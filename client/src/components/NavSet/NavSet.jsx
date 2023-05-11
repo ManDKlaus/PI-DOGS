@@ -1,12 +1,13 @@
 import "./NavSet.css"
 import { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
-import { orderCards, filterCards, reset, actDogs } from '../../redux/actions/actions.js';
+import { orderCards, reset, actDogs, searchDogById, searchDogs } from '../../redux/actions/actions.js';
 import { filter } from "../../utils/funcFilters.js";
 
 export default function NavSet() {
-  const [lifeSpan, setLifeSpan] = useState([false, false, false, false]);
+  const [lifeSpan, setLifeSpan] = useState([false, false, false]);
   const [size, setSize] = useState([false, false, false, false]);
+  const [data, setData] = useState('');
   const dispatch = useDispatch();
   const state = useSelector((s) => s);
 
@@ -16,11 +17,37 @@ export default function NavSet() {
     dispatch(orderCards(value));
   };
 
-  async function handleFilter(e) {/* 
-    dispatch(filterCards(e.target)); */
-    const { allDogs, allFavs/* , lifeSpan, size */ } = state;
-    
+  function onSearch(data) {
+    let nameOrId = data.trim().replace(/\s+/g, '');
+    const idRegex = /^(\d+|[a-f\d]{8}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{12})$/i;
+    if (idRegex.test(nameOrId)) {
+      const id = /^\d+$/.test(nameOrId) ? parseInt(nameOrId) : nameOrId;
+      dispatch(searchDogById(id));
+    } else {
+      dispatch(searchDogs(nameOrId));
+    };
+  };
+
+  function handleChange (event) {
+     setData(event.target.value);
+  };
+
+  async function handleFilter(e) {
+    const { tempsFiltD } = state;
     const { id, checked } = e.target;
+
+    let newDShow = [...tempsFiltD];
+    let inputAPI = document.getElementById("origin1");
+    let inputCreate = document.getElementById("origin2");
+    if (id === "origin1" && checked) {
+      inputCreate.checked = false;
+      newDShow = newDShow.filter((dog) => Number.isInteger(dog.id));
+      dispatch(actDogs(newDShow));
+    } else if (id === "origin2" && checked) {
+      inputAPI.checked = false;
+      newDShow = newDShow.filter((dog) => !Number.isInteger(dog.id));
+      dispatch(actDogs(newDShow));
+    };
     const newLS = [...lifeSpan];
     const newS = [...size];
     const indexMap = {
@@ -31,30 +58,35 @@ export default function NavSet() {
       switch5: 4,
       switch6: 5,
       switch7: 6,
-      switch8: 7,
     };
     const index = indexMap[id];
+    let newsToShow;
     if (index !== undefined) {
         if (checked) {
         newLS[index] = true;
-        newS[index - 4] = true;
+        newS[index - 3] = true;
         } else {
         newLS[index] = false;
-        newS[index - 4] = false;
-        }
-    }
-    setLifeSpan(newLS);
-    setSize(newS);
-  
-    const newsToShow = await filter(allDogs, allFavs, newLS, newS);
-    console.log("newsToShow", newsToShow)
-    
+        newS[index - 3] = false;
+        };
+      setLifeSpan(newLS);
+      setSize(newS);
+      newsToShow = await filter(newDShow, newLS, newS);
+    } else {
+      newsToShow = newDShow;
+    };
     dispatch(actDogs(newsToShow));
   };
   
-
   function resetBttn() {
-      dispatch(reset());
+    dispatch(reset());
+    setLifeSpan([false, false, false]);
+    setSize([false, false, false, false]);
+    for (let i = 1; i < 8; i++) {
+      let input = document.getElementById(`switch${i}`);
+      input.checked = false;
+    };
+    document.getElementsByClassName("");
   };
 
   return (
@@ -72,16 +104,16 @@ export default function NavSet() {
             <input
               onChange={ handleFilter } 
               type="checkbox" 
-              value="Alive" 
-              id="irigin1" />
-            <label htmlFor="irigin1" />
+              value="Api" 
+              id="origin1" />
+            <label htmlFor="origin1" />
           </div>
           <div>
             <p>Created</p>
             <input 
               onChange={ handleFilter } 
               type="checkbox" 
-              value="Dead" 
+              value="Created" 
               id="origin2" />
             <label htmlFor="origin2" />
           </div>
@@ -91,15 +123,17 @@ export default function NavSet() {
           <div>
             <h3>Name or Id</h3>
             <input
-              type="text" 
-              value=""
+              onChange={ handleChange }
+              type="text"
+              name="search"
+              value={ data }
               placeholder="Write here..."
               id="search" />
-            <button>Search</button>
+            <button onClick={ ()=>onSearch(data) }>Search</button>
           </div>
           <h3>Life Span</h3>
           <div>
-            <p>Less than 12</p>
+            <p>8 or less</p>
             <input 
               onChange={ handleFilter } 
               type="checkbox" 
@@ -108,7 +142,7 @@ export default function NavSet() {
             <label htmlFor="switch1" />
           </div>
           <div>
-            <p>Between 13 and 15</p>
+            <p>from 9 to 12</p>
             <input 
               onChange={ handleFilter } 
               type="checkbox" 
@@ -117,7 +151,7 @@ export default function NavSet() {
             <label htmlFor="switch2" />
           </div>
           <div>
-            <p>Between 16 and 18</p>
+            <p>13 or more</p>
             <input 
               onChange={ handleFilter } 
               type="checkbox" 
@@ -125,51 +159,42 @@ export default function NavSet() {
               id="switch3" />
             <label htmlFor="switch3" />
           </div>
-          <div>
-            <p>More than 19</p>
-            <input 
-              onChange={ handleFilter } 
-              type="checkbox" 
-              value="4" 
-              id="switch4" />
-            <label htmlFor="switch4" />
-          </div>
           <h3>Size</h3>
           <div>
             <p>Toy</p>
             <input 
               onChange={ handleFilter } 
               type="checkbox" 
-              value="5" 
-              id="switch5" />
-            <label htmlFor="switch5" />
+              value="toy" 
+              id="switch4" />
+            <label htmlFor="switch4" />
           </div>
           <div>
             <p>Small</p>
             <input 
               onChange={ handleFilter } 
               type="checkbox" 
-              value="6" 
-              id="switch6" />
-            <label htmlFor="switch6" />
+              value="small" 
+              id="switch5" />
+            <label htmlFor="switch5" />
           </div>
           <div>
             <p>Medium</p>
             <input 
               onChange={ handleFilter } 
               type="checkbox" 
-              value="7" 
-              id="switch7" />
-            <label htmlFor="switch7" />
+              value="medium" 
+              id="switch6" />
+            <label htmlFor="switch6" />
           </div>
           <div>
             <p>Large</p>
             <input 
               onChange={ handleFilter } 
               type="checkbox" 
-              value="8" 
-              id="switch8" />
-            <label htmlFor="switch8" />
+              value="large" 
+              id="switch7" />
+            <label htmlFor="switch7" />
           </div>
         </div>
       <button onClick={ resetBttn } >

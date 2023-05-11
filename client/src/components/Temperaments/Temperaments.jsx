@@ -24,18 +24,26 @@ export default function Temperaments() {
     dispatch(filterTemps(temps));
   };
 
-  const temperamentsToShow = temperaments.slice((page - 1) * 31, page * 31);
+  const temperamentsToShow = temperaments?.slice((page - 1) * 31, page * 31);
 
-  const tempsView = temperamentsToShow.map((temperament) => (
-    <li key={temperament.id} onClick={() => handleTemperament(temperament)} className={temps.includes(temperament.name) ? 'selected' : ''}>
-      { temperament.name }
+  const tempsView = temperamentsToShow?.map((temperament) => (
+    <li
+      key={temperament.id}
+      onClick={() => handleTemperament(temperament)}
+      className={temps.includes(temperament.name) ? 'selected' : ''}>
+        { temperament.name }
     </li>
   ));
 
   const paginationTemps = [];
   for (let i = 1; i <= Math.ceil(temperaments.length / 31); i++) {
-   paginationTemps.push(
-      <button key={i} onClick={() => setPage(i)} className={ page === i ? 'selected' : '' } >{i}</button>
+    paginationTemps.push(
+      <button
+        key={i}
+        onClick={() => setPage(i)}
+        className={ page === i ? 'selected' : '' } >
+          {i}
+      </button>
     );
   };
 

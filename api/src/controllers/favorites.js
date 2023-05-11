@@ -1,15 +1,21 @@
 const axios = require("axios");
-const { Sequelize } = require('sequelize');
+const { Sequelize, where } = require('sequelize');
 const Op = Sequelize.Op;
 
 require("dotenv").config() // Objeto process con la propiedad env
 
-const { infoId } = require("../utils/functions.js")
+const { infoId, infoCreated } = require("../utils/functions.js")
 const { Favorite, Dog, Temperament } = require("../db.js")
 const { API_URL } = process.env;
 
-const searchFav = async () => {    
-    const favs = [];
+const searchFav = async () => {
+    let favsAPI = []
+    const favsDB = await Favorite.findAll();
+    for (const fav of favsDB) {
+        let dog = (await axios.get(`${API_URL}/${fav.dogId}`)).data;
+        dog = await infoId(dog);
+        favsAPI.push(dog);
+    };
     let dogsDB = await Dog.findAll({
         where: {
             isFav: true 
@@ -22,15 +28,10 @@ const searchFav = async () => {
             }
         }
     });
-    if(dogsDB) {
-    dogsDB = dogsDB.map((e) => favs.push(e));
-    }
-    const favsDB = await Favorite.findAll();
-    for (const fav of favsDB) {
-        let dog = (await axios.get(`${API_URL}/${fav.dogId}`)).data;
-        dog = await infoId(dog);
-        favs.push(dog);
-    };
+    const newDogsDB = await Promise.all(
+        dogsDB.map((dog) => infoCreated(dog.dataValues))
+    );
+    const favs = [...newDogsDB, ...favsAPI];
     if (!favs) {
         throw new Error("Favorites not found");
     };
@@ -53,16 +54,11 @@ const addFavorites = async (dogId) => {
         });
         return newFav;
     };
-    const dog = await Dog.findOne({
-        where: {
-            id: dogId
-        }
-    });
-    if (dog && dog[0].isFav === false) {
-        dog.isFav = true;
-        await dog.save();
-        return dog.id;
-    }
+    const dog = await Dog.findByPk(dogId);
+    if (dog) {
+        await dog.update({ isFav: true });
+        return dogId;
+    };
     throw new Error("Favorite already exists or not exits dog");
 };
 
@@ -83,14 +79,11 @@ const eraseFavorite = async (dogId) => {
                 return dogId;
             };
         };
-    };
-    const dogsDB = await Dog.findAll();
-    for (const dog of dogsDB) {
-        if (dog.id === dogId) {
-            dog.isFav = false;
-            await dog.save();
-            return dog.id;
-        };
+    };    
+    const dog = await Dog.findByPk(dogId);
+    if (dog) {
+        await dog.update({ isFav: false });
+        return dogId;
     };
     throw new Error("Not deleted from favorite: Id not found");
 };

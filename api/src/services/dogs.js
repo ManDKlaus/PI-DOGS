@@ -8,7 +8,7 @@ async function postDog (req, res) {
         weight,
         height,
         lifeSpan,
-        temperamentsId,
+        temperaments,
         image,
         id,
     } = req.body;
@@ -19,7 +19,7 @@ async function postDog (req, res) {
             height,
             lifeSpan,
             image,
-        }, temperamentsId);
+        }, temperaments);
         res.status(200).json(dog);
     } catch (error) {
         res.status(500).json({ message: error.message });
