@@ -2,7 +2,7 @@ import "./NavSet.css"
 import { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
 import { orderCards, reset, actDogs, searchDogById, searchDogs } from '../../redux/actions/actions.js';
-import { filter } from "../../utils/funcFilters.js";
+import { filtered } from "../../utils/funcFilters.js";
 
 export default function NavSet() {
   const [lifeSpan, setLifeSpan] = useState([false, false, false]);
@@ -33,10 +33,17 @@ export default function NavSet() {
   };
 
   async function handleFilter(e) {
-    const { tempsFiltD } = state;
+    const { tempsFiltD, dogsShow, allDogs } = state;
     const { id, checked } = e.target;
+    let newDShow;
+    if (!tempsFiltD) {
+      newDShow = [...tempsFiltD];
+    } else if (!dogsShow){
+      newDShow = [...dogsShow];
+    } else {
+      newDShow = [...allDogs];
+    };
 
-    let newDShow = [...tempsFiltD];
     let inputAPI = document.getElementById("origin1");
     let inputCreate = document.getElementById("origin2");
     if (id === "origin1" && checked) {
@@ -71,7 +78,7 @@ export default function NavSet() {
         };
       setLifeSpan(newLS);
       setSize(newS);
-      newsToShow = await filter(newDShow, newLS, newS);
+      newsToShow = await filtered(newDShow, newLS, newS);
     } else {
       newsToShow = newDShow;
     };
@@ -90,7 +97,7 @@ export default function NavSet() {
   };
 
   return (
-    <div className="NavSet">
+    <div className="NavSet" id="NavSet" >
       <h3>Alphabetical Order</h3>
       <select onChange={ handleOrder } name="order" defaultValue={"DEFAULT"}>
         <option value="DEFAULT" disabled={ true } >DEFAULT</option>

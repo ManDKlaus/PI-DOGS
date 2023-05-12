@@ -81,7 +81,7 @@ export function createOrEditDog (dataDog) {
 export function removeDog (dogId) {
     return async function (dispatch) {
         try {
-            await axios.delete("http://localhost:3001/dogs", dogId);
+            await axios.delete(`http://localhost:3001/dogs/${dogId}`);
             dispatch({
                 type: REMOVE_DOG,
                 payload: dogId,

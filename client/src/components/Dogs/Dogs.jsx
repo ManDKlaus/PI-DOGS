@@ -9,6 +9,7 @@ export default function Dogs() {
   const [pageDogs, setPageDogs] = useState(1);
   const [pageFavs, setPageFavs] = useState(1);
   const [numDogs, setNumDogs] = useState(8);
+  const [viewNavSet, setViewNavSet] = useState(false);
 
   const handleNumDogs = (e) => {
     setNumDogs(e.target.value);
@@ -43,31 +44,51 @@ export default function Dogs() {
     );
   };
 
+  const handleNavSet = () => {
+    let set = document.getElementById("NavSet");
+    if (!viewNavSet) {
+      set.style.display = "flex";
+      setViewNavSet(true);
+    } else {
+      set.style.display = "none";
+      setViewNavSet(false);
+    };
+  };
+
   return (
-    <div className='Dogs'>
+    <div className='Dogs' >
+      <button className="callNavSet" onClick={ handleNavSet } >
+        <span className="material-symbols-rounded">
+          tune
+        </span>
+      </button>
       <NavSet />
-      <div className='container'>
-        <h2>Choose your favorites</h2>
-        <ul>
-          { dogsView }
-        </ul>
-        <div className='paginate' >
-          { paginationDogs }
+      <div className='container' >
+        <div className='sub-container' >
+          <h2>Choose your favorites</h2>
+          <ul>
+            { dogsView }
+          </ul>
+          <div className='paginate' >
+            { paginationDogs }
+          </div>
         </div>
-        <div id="titleFav">
-          <h3>Favorites </h3>
-          <label htmlFor="numShow">Show:</label>
-          <select onChange={ handleNumDogs } name="numShow" id="numShow" defaultValue={"8"}>
-            <option value="8" >8</option>
-            <option value="16">16</option>
-            <option value="24">24</option>
-          </select>
-        </div>
-        <ul>
-          { favsView }
-        </ul>
-        <div className='paginate' >
-          { paginationFavs }
+        <div className='sub-container' >
+          <div id="titleFav" >
+            <h3>Favorites </h3>
+            <label htmlFor="numShow" >Show:</label>
+            <select onChange={ handleNumDogs } name="numShow" id="numShow" defaultValue={"8"}>
+              <option value="8" >8</option>
+              <option value="16" >16</option>
+              <option value="24" >24</option>
+            </select>
+          </div>
+          <ul>
+            { favsView }
+          </ul>
+          <div className='paginate' >
+            { paginationFavs }
+          </div>
         </div>
       </div>
     </div>

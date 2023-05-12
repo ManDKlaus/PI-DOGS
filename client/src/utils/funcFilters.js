@@ -1,13 +1,13 @@
-export async function filter(dogsShow, lifeSpan, size) {
+export async function filtered(dogsShow, lifeSpan, size) {
     let dFiltLS = [];
     if (lifeSpan[0]) {
-        dFiltLS = dFiltLS.concat(filterLifeSpan(dogsShow, 0, 8));
+        dFiltLS = dFiltLS.concat(filterLifeSpan(dogsShow, 1, 8));
     };
     if (lifeSpan[1]) {
         dFiltLS = dFiltLS.concat(filterLifeSpan(dogsShow, 9, 12));
     };
     if (lifeSpan[2]) {
-        dFiltLS = dFiltLS.concat(filterLifeSpan(dogsShow, 13));
+        dFiltLS = dFiltLS.concat(filterLifeSpan(dogsShow, 13, 100));
     };    
     dFiltLS = [...new Set(dFiltLS)];
     if (dFiltLS.length === 0) {
@@ -45,8 +45,19 @@ function filterSize(dogs, size) {
 
 function filterLifeSpan(dogs, min, max) {
     const filterDogs = dogs.filter((dog) => {
-        const [minLS, maxLS] = dog.lifeSpan && dog.lifeSpan.includes('-') ? dog.lifeSpan.split(' - ').map((age) => Number(age.replace(/\D/g, ''))) : [0, 0];
-        return minLS <= max && maxLS >= min;
+        const lifeSpan = dog.lifeSpan && dog.lifeSpan.replace(/[^-\d]/g, '');
+      if (!lifeSpan) {
+        return false;
+      }
+      if (!lifeSpan.includes('-')) {
+        return Number(lifeSpan) >= min && Number(lifeSpan) <= max;
+      }
+      const [minLS, maxLS] = lifeSpan.split('-').map((age) => Number(age));
+      if (isNaN(minLS) || isNaN(maxLS)) {
+        return false;
+      }
+      return minLS <= max && maxLS >= min;
     });
     return filterDogs;
-};
+  }
+  

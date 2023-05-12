@@ -85,6 +85,11 @@
     padding: 0;
 }
 
+.Details span {
+    color:white;
+    text-shadow: -1.1px -1.1px 0 #000, 1.1px -1.1px 0 #000, -1.1px 1.1px 0 #000, 1.1px 1.1px 0 #000;
+}
+
 .Details .data .edit {
     top: -51px;
     right: 160px;

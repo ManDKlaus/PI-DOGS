@@ -27,8 +27,9 @@ async function postDog (req, res) {
 };
 
 async function deleteDog (req, res) {
-    const { id } = req.body;
+    const { id } = req.params;
     try {
+        console.log(id)
         await eraseDog(id);
         res.status(200).json({ message: "Dog successfully deleted"});
     } catch (error) {
@@ -38,7 +39,7 @@ async function deleteDog (req, res) {
 };
 
 async function getDogById (req, res) {
-    const {id} = req.params;
+    const { id } = req.params;
     try {
         const dog = await searchDogById(id);
         res.status(200).json(dog);

@@ -1,10 +1,13 @@
 .NavSet {
+    position: absolute;
+    left: 44px;
     width: 15%;
     min-width: 200px;
     height: calc(100vh - 50px);
-    display: flex;
+    display: none;
     flex-direction: column;
     justify-content: center;
+    z-index: 3;
 }
 
 .App.day .NavSet {

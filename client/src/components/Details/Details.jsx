@@ -48,7 +48,7 @@ export default function Details() {
           arrow_back_ios_new
         </span>
       </button>
-      <h2>{details.name} (<span>{ details.size }</span>)</h2>
+      <h2>{details.name} ({ details.size })</h2>
       <div className="container">
         <img src={details.image} alt={details.name} />
         <div className="data">

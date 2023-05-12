@@ -9,6 +9,6 @@ const { getDogById, postDog, getDogs, deleteDog } = require('../services/dogs.js
 router.get('/', getDogs); 
 router.get('/:id', getDogById);
 router.post('/', postDog);
-router.delete('/', deleteDog);
+router.delete('/:id', deleteDog);
 
 module.exports = router;

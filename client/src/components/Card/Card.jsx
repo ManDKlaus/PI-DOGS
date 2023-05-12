@@ -19,7 +19,6 @@ export default function Card({ dog }) {
   };
 
   function editCreation () {
-    console.log("dog",dog)
     dispatch(editDog(dog));
   };
 

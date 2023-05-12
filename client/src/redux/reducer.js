@@ -89,6 +89,7 @@ export default function rootReducer (state=initialState,{type, payload}) {
             const all = state.allDogs.filter((e)=> e.id !== payload)
             return {
                 ...state,
+                details: show[0],
                 dogsShow: show,
                 allDogs: all,
             };

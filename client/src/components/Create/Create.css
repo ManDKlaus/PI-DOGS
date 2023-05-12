@@ -54,16 +54,38 @@
 }
 
 .Create form .container {
-    width: 70%;
+    width: 80%;
     display: flex;
     gap:5%;
 }
 
 .Create form .container div {
-    width: 50%;
+    position: relative;
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+.Create .container div div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    gap: 5px;
+}
+
+.Create .container p {
+    display: none;
+    font-size: 12px;
+    line-height: 1;
+    margin: 0;
+    flex: 1;
+    text-align: left;
+}
+
+.Create .container p:first-child {
+    text-align: right;
 }
 
 .Create form .container input {
@@ -100,14 +122,14 @@
     color: #212121;
     background-color: white;
     outline-color: #212121;
-    box-shadow: 0 0 15px rgba(0, 0, 0, .4);
+    box-shadow: 0 0 10px rgba(0, 0, 0, .4);
 }
 
 .App.night .Create input:focus {
     color: white;
     background-color: #212121;
     outline-color: #212121;
-    box-shadow: 0 0 15px rgba(250, 250, 250, .4);
+    box-shadow: 0 0 10px rgba(250, 250, 250, .4);
 }
 
 .Create select {
@@ -124,7 +146,7 @@
 }
 
 .App.day option:checked {
-    background-color: #212121;
+    background-color: #303030;
     color: white;
 }
 
@@ -165,4 +187,3 @@ select::-webkit-scrollbar-track {
     background-color: #f5f5f5;
     border-radius: 4px;
 }
-  

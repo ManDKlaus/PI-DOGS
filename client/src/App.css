@@ -74,19 +74,19 @@ ul {
 }
 
 .App.night .block:nth-child(4n + 1) {
-  background-image: url(./assets/img/huella1.png);
+  background-image: url(./assets/img/huella5.png);
 }
 
 .App.night .block:nth-child(4n + 2) {
-  background-image: url(./assets/img/huella2.png);
+  background-image: url(./assets/img/huella6.png);
 }
 
 .App.night .block:nth-child(4n + 3) {
-  background-image: url(./assets/img/huella3.png);
+  background-image: url(./assets/img/huella7.png);
 }
 
 .App.night .block:nth-child(4n + 4) {
-  background-image: url(./assets/img/huella4.png);
+  background-image: url(./assets/img/huella8.png);
 }
 
 @keyframes App-logo-spin {
@@ -161,4 +161,12 @@ ul {
 .App::-webkit-scrollbar-track {
   background-color: #f5f5f5;
   border-radius: 4px;
+}
+
+.material-symbols-rounded {
+  font-variation-settings:
+  'FILL' 1,
+  'wght' 700,
+  'GRAD' 0,
+  'opsz' 48
 }

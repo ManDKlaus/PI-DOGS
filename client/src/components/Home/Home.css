@@ -1,7 +1,6 @@
 .Home {
     position: absolute;
     top: 0;
-    margin-top: 50px;
     width: 100%;
     overflow: hidden;
     z-index: 1;
@@ -9,18 +8,18 @@
 
 .Home section {
     margin: 0;
-    padding: 0;
+    padding: 50px 0 0 0 ;
     width: 100%;
     height: calc(100vh - 50px);
-}
+}/* 
 
 .App.day .Home section {
     box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
 }
 
 .App.night .Home section {
-    box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
-}
+    box-shadow: 0px 0px 10px rgba(250,250,250,0.2);
+} */
 
 .Home section:first-child {
     display: flex;

@@ -1,0 +1,127 @@
+.About {
+    color: white;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.About #title {
+    position: relative;
+    margin: 0;
+    padding: 15px;
+    width: 30%;
+    height: 25%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    background-color: #212121;
+    border-radius: 10px;
+}
+
+.About img {
+    position: absolute;
+    width: 150px;
+    bottom: 200px;
+    border-radius: 5px;
+}
+
+.About .cont {
+    width: 100%;
+    height: 80px;
+    display: flex;
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+}
+
+.About p{
+    font-size: 40px;
+    font-weight: 400;
+}
+
+.dynamicText li{
+    text-align: left;
+    list-style: none;
+    font-weight: 500;
+    position: relative;
+    top: 0;
+    animation: slide 12s steps(4) infinite;
+}
+
+@keyframes slide {
+    100%{
+      top: -360px;
+    }
+}
+
+.dynamicText li span{
+    padding: 0;
+    position: relative;
+    margin: 15px 0;
+    line-height: 70px;
+    font-size: 40px;
+}
+
+.dynamicText li span::after{
+    content: "";
+    position: absolute;
+    left: 0;
+    height: 110%;
+    width: 100%;
+    background: #212121;
+    border-left: 2px solid white;
+    animation: typing 3s steps(10) infinite;
+}
+
+@keyframes typing {
+    40%, 60%{
+      left: calc(100% + 7px);
+    }
+    100%{
+      left: 0;
+    }
+}
+
+.networks {
+    width: 40%;
+    height: 5%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: white;
+    border-radius: 5px;
+    margin-top: 30px;
+    box-shadow: 0 0 10px rgba(0,0,0,.2);
+}
+  
+.networks a {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    margin: 0;
+    padding: 0;
+    background-image: url("../../assets/img/icons_socials.png");
+    background-size: 120px;
+    border-radius: 5px;
+}
+
+#linkedin {
+    background-position: -40px -74px;
+}
+
+#instagram {
+    background-position: 0px 1px;
+}
+
+#facebook {
+    background-position: -40px 1px;
+}
+
+#whatsapp {
+    background-position: 0px -36px;
+}

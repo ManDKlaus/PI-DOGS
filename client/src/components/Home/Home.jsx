@@ -9,7 +9,7 @@ import Details from '../Details/Details.jsx';
 export default function Home() {
   return (
     <div className='Home'>
-      <section>
+      <section id='home'>
         <h1>DOG<span>s</span></h1>
         <div>
           <p>Welcome to DOGs, the website where you can find detailed information about dog breeds, their characteristics, temperaments, sizes, and weights. You can filter and search dogs by name or identifier, as well as select your favorites to have them always at hand.</p>

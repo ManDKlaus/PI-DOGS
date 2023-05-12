@@ -1,5 +1,5 @@
 .Card {
-    width: 130px;
+    width: 147px;
     height: 300px;
     position: relative;
     padding: 10px;
@@ -10,7 +10,7 @@
 .Card img {
     position: absolute;
     top: -20px;
-    left: 17px;
+    left: 19px;
     width: 90%;
     height: 40%;
     object-fit: cover;
@@ -80,15 +80,14 @@
 }
 
 .Card button span:last-child {
+    color:#212121;
+    text-shadow: none;
     display: none;
+    font-size: 16px;
 }
 
 .Card button span {
     font-size: 20px;
-}
-
-.Card button span:last-child{
-    font-size: 16px;
 }
 
 .Card button:hover span {
@@ -113,10 +112,14 @@
     right: -32px;
 }
 
+.Card span:first-child {
+  color:white;
+  text-shadow: -1.1px -1.1px 0 #000, 1.1px -1.1px 0 #000, -1.1px 1.1px 0 #000, 1.1px 1.1px 0 #000;
+}
+
 .Card .edit {
     top: 30px;
     right: 0;
-    font-size: 5px;
 }
 
 .Card .edit:hover {
